@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="section">
+        <h2>Invoice Information</h2>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="indent-no" class="form-label">Indent No.</label>
+                <input type="text" class="form-control" id="indent-no" placeholder="Enter indent number">
+            </div>
+            <div class="col-md-6">
+                <label for="invoice-date" class="form-label">Date</label>
+                <input type="date" class="form-control" id="invoice-date">
+            </div>
+            <div class="col-md-6">
+                <label for="invoice-from" class="form-label">From</label>
+                <input type="text" class="form-control" id="invoice-from" placeholder="Enter origin">
+            </div>
+            <div class="col-md-6">
+                <label for="shipment" class="form-label">Shipment</label>
+                <input type="text" class="form-control" id="shipment" placeholder="Enter shipment details">
+            </div>
+            <div class="col-md-6">
+                <label for="currency" class="form-label">Currency</label>
+                <select class="form-select" id="currency">
+                    <option value="USD">USD</option>
+                    <option value="AED">AED</option>
+                    <option value="RMB">RMB</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Buyer Information</h2>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="buyer-name" class="form-label">Buyer Name</label>
+                <input type="text" class="form-control" id="buyer-name" placeholder="Enter buyer's name">
+            </div>
+            <div class="col-md-6">
+                <label for="buyer-address" class="form-label">Buyer Address</label>
+                <input type="text" class="form-control" id="buyer-address" placeholder="Enter buyer's address">
+            </div>
+            <div class="col-md-6">
+                <label for="buyer-phone" class="form-label">Phone</label>
+                <input type="text" class="form-control" id="buyer-phone" placeholder="Enter buyer's phone number">
+            </div>
+            <div class="col-md-6">
+                <label for="buyer-email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="buyer-email" placeholder="Enter buyer's email">
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="items-section">
+        <h2>Items</h2>
+        <div class="item">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="item-name-1" class="form-label">Item Name</label>
+                    <input type="text" class="form-control" id="item-name-1" placeholder="Enter item name">
+                </div>
+                <div class="col-md-6">
+                    <label for="item-quantity-cartons-1" class="form-label">Quantity in Cartons</label>
+                    <input type="number" class="form-control" id="item-quantity-cartons-1" placeholder="Enter quantity in cartons">
+                </div>
+                <div class="col-md-6">
+                    <label for="item-quantity-pieces-1" class="form-label">Quantity in Pieces</label>
+                    <input type="number" class="form-control" id="item-quantity-pieces-1" placeholder="Enter quantity in pieces">
+                </div>
+                <div class="col-md-6">
+                    <label for="item-price-1" class="form-label">Price Per Piece</label>
+                    <input type="number" class="form-control" id="item-price-1" placeholder="Enter price per piece">
+                </div>
+                <div class="col-md-12">
+                    <label for="item-remarks-1" class="form-label">Remarks</label>
+                    <textarea class="form-control" id="item-remarks-1" placeholder="Enter any remarks"></textarea>
+                </div>
+                <div class="col-md-12">
+                    <label for="item-photos-1" class="form-label">Upload Photos</label>
+                    <input type="file" class="form-control" id="item-photos-1" multiple>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="addItem()">Add Another Item</button>
+
+    <div class="section">
+        <h2>Payment Terms</h2>
+        <label for="payment-terms" class="form-label">Payment Terms</label>
+        <textarea class="form-control" id="payment-terms" placeholder="Enter payment terms"></textarea>
+    </div>
+
+    <button class="btn btn-success" onclick="generateInvoice()">Generate Invoice</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function addItem() {
+        const itemsSection = document.getElementById("items-section");
+        const itemCount = itemsSection.querySelectorAll(".item").length + 1;
+
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
+
+        const itemHtml = `
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="item-name-${itemCount}" class="form-label">Item Name</label>
+                    <input type="text" class="form-control" id="item-name-${itemCount}" placeholder="Enter item name">
+                </div>
+                <div class="col-md-6">
+                    <label for="item-quantity-cartons-${itemCount}" class="form-label">Quantity in Cartons</label>
+                    <input type="number" class="form-control" id="item-quantity-cartons-${itemCount}" placeholder="Enter quantity in cartons">
+                </div>
+                <div class="col-md-6">
+                    <label for="item-quantity-pieces-${itemCount}" class="form-label">Quantity in Pieces</label>
+                    <input type="number" class="form-control" id="item-quantity-pieces-${itemCount}" placeholder="Enter quantity in pieces">
+                </div>
+                <div class="col-md-6">
+                    <label for="item-price-${itemCount}" class="form-label">Price Per Piece</label>
+                    <input type="number" class="form-control" id="item-price-${itemCount}" placeholder="Enter price per piece">
+                </div>
+                <div class="col-md-12">
+                    <label for="item-remarks-${itemCount}" class="form-label">Remarks</label>
+                    <textarea class="form-control" id="item-remarks-${itemCount}" placeholder="Enter remarks"></textarea>
+                </div>
+                <div class="col-md-12">
+                    <label for="item-photos-${itemCount}" class="form-label">Upload Photos</label>
+                    <input type="file" class="form-control" id="item-photos-${itemCount}" multiple>
+                </div>
+            </div>
+        `;
+
+        itemDiv.innerHTML = itemHtml;
+        itemsSection.appendChild(itemDiv);
+    }
+
+    function readFileAsDataURL(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve({ name: file.name, data: e.target.result });
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+function generateInvoice() {
+    const indentNo = document.getElementById("indent-no").value;
+    const invoiceDate = document.getElementById("invoice-date").value;
+    const invoiceFrom = document.getElementById("invoice-from").value;
+    const shipment = document.getElementById("shipment").value;
+    const currency = document.getElementById("currency").value;
+
+    const buyerName = document.getElementById("buyer-name").value;
+    const buyerAddress = document.getElementById("buyer-address").value;
+    const buyerPhone = document.getElementById("buyer-phone").value;
+    const buyerEmail = document.getElementById("buyer-email").value;
+
+    const paymentTerms = document.getElementById("payment-terms").value;
+
+    const itemElements = document.querySelectorAll(".item");
+    const items = [];
+    const filePromises = [];
+
+    itemElements.forEach((itemElement, index) => {
+        const itemName = itemElement.querySelector(`#item-name-${index + 1}`).value;
+        const itemQuantityCartons = itemElement.querySelector(`#item-quantity-cartons-${index + 1}`).value;
+        const itemQuantityPieces = itemElement.querySelector(`#item-quantity-pieces-${index + 1}`).value;
+        const itemPrice = itemElement.querySelector(`#item-price-${index + 1}`).value;
+        const itemRemarks = itemElement.querySelector(`#item-remarks-${index + 1}`).value;
+
+        items.push({
+            name: itemName,
+            quantityCartons: itemQuantityCartons,
+            quantityPieces: itemQuantityPieces,
+            price: itemPrice,
+            remarks: itemRemarks,
+        });
+
+        const photosInput = itemElement.querySelector(`#item-photos-${index + 1}`);
+        if (photosInput.files.length > 0) {
+            Array.from(photosInput.files).forEach((file) => {
+                filePromises.push(readFileAsDataURL(file));
+            });
+        }
+    });
+
+    Promise.all(filePromises).then((imagesData) => {
+        const newWindow = window.open("", "_blank");
+
+        let invoiceContent = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>PROFORMA INVOICE - DEEPALI INDUSTRIES HONG KONG LIMITED</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f5f5f5;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .invoice {
+                        background-color: #ffffff;
+                        margin: 20px;
+                        padding: 20px;
+                        border: 2px solid #ccc;
+                        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+                    }
+                    .invoice h2, .invoice h3 {
+                        text-align: center;
+                        color: #333;
+                        text-transform: uppercase;
+                    }
+                    .invoice p {
+                        text-align: left;
+                        color: #555;
+                    }
+                    .invoice table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 20px;
+                    }
+                    .invoice table, .invoice th, .invoice td {
+                        border: 1px solid #ddd;
+                    }
+                    .invoice th {
+                        background-color: #f0f0f0;
+                        color: #333;
+                        padding: 12px;
+                        text-align: left;
+                    }
+                    .invoice td {
+                        padding: 12px;
+                        text-align: left;
+                    }
+                    .section {
+                        margin-top: 20px;
+                        padding: 10px;
+                        border-top: 1px solid #ccc;
+                        position: relative;
+                    }
+                    .item-details {
+                        padding: 12px;
+                        text-align: left;
+                    }
+                    .item-info {
+                        display: flex;
+                        align-items: center;
+                    }
+                    .item-image {
+                        margin-left: auto;
+                        margin-right: 20px;
+                        width: 80px;
+                        height: auto;
+                    }
+                    .signature {
+                        margin-top: 30px;
+                        text-align: left;
+                    }
+                    .signature h4 {
+                        color: #333;
+                        text-align: left;
+                        margin-bottom: 10px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="invoice">
+                    <h2>PROFORMA INVOICE</h2>
+                    <h3>DEEPALI INDUSTRIES HONG KONG LIMITED</h3>
+                    <p style="text-align: center;">Add: Room 1305A, Nathan Road, Mongkok, Kowloon, Hong Kong</p>
+
+                    <div class="section">
+                        <h4>Invoice Information</h4>
+                        <table>
+                            <tr>
+                                <th>Details</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <td>Indent No.</td>
+                                <td>${indentNo}</td>
+                            </tr>
+                            <tr>
+                                <td>Date</td>
+                                <td>${invoiceDate}</td>
+                            </tr>
+                            <tr>
+                                <td>From</td>
+                                <td>${invoiceFrom}</td>
+                            </tr>
+                            <tr>
+                                <td>Shipment</td>
+                                <td>${shipment}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="section">
+                        <h4>Buyer Information</h4>
+                        <table>
+                            <tr>
+                                <th>Details</th>
+                            </tr>
+                            <tr>
+                                <td>Buyer Name: ${buyerName}</td>
+                            </tr>
+                            <tr>
+                                <td>Buyer's Address: ${buyerAddress}</td>
+                            </tr>
+                            <tr>
+                                <td>Phone: ${buyerPhone}</td>
+                            </tr>
+                            <tr>
+                                <td>Email: ${buyerEmail}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="section">
+                        <h4>Items</h4>
+                        <table>
+                            <tr>
+                                <th>Item</th>
+                                <th>Details</th>
+                            </tr>
+        `;
+
+        items.forEach((item, index) => {
+            const itemTotal = item.quantityPieces * item.price;
+
+            invoiceContent += `
+                <tr>
+                    <td>
+                        <div class="item-info">
+                            <p style="margin: 0; text-align: left;">${item.name}</p>
+                            ${imagesData[index] ? `<img class="item-image" src="${imagesData[index].data}" alt="${imagesData[index].name}" />` : ""}
+                        </div>
+                    </td>
+                    <td class="item-details">
+                        <p>Quantity (Cartons): ${item.quantityCartons}</p>
+                        <p>Quantity (Pieces): ${item.quantityPieces}</p>
+                        <p>Price Per Piece: ${currency} ${item.price}</p>
+                        <p>Total Price: ${currency} ${itemTotal}</p>
+                        <p>Remarks: ${item.remarks}</p>
+                    </td>
+                </tr>
+            `;
+        });
+
+        invoiceContent += `
+                    </table>
+                </div>
+
+                <div class="section">
+                    <h4>Total Value of the Invoice</h4>
+                    <table>
+                        <tr>
+                            <th>Item</th>
+                            <th>Price (${currency})</th>
+                        </tr>
+        `;
+
+        let totalValue = 0;
+        items.forEach((item) => {
+            const itemTotal = item.quantityPieces * item.price;
+            totalValue += itemTotal;
+
+            invoiceContent += `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td>${currency} ${itemTotal}</td>
+                        </tr>
+            `;
+        });
+
+        invoiceContent += `
+                        <tr>
+                            <td><strong>Total Value</strong></td>
+                            <td><strong>${currency} ${totalValue}</strong></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <h4>Payment Terms</h4>
+                    <table>
+                        <tr>
+                            <th>Details</th>
+                        </tr>
+                        <tr>
+                            <td>${paymentTerms}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <h4>Accepted & Confirmed By:</h4>
+                    <p>The Buyer ____________________</p>
+                    <p>The Seller ____________________</p>
+                </div>
+            </div>
+        `;
+
+        newWindow.document.write(invoiceContent);
+        newWindow.document.close();
+    });
+}
+
+</script>
+
+</body>
+</html>
