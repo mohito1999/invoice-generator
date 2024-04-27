@@ -9,6 +9,7 @@
 <body>
 
 <div class="container mt-5">
+    <!-- Invoice Information Section -->
     <div class="section">
         <h2>Invoice Information</h2>
         <div class="row g-3">
@@ -39,6 +40,7 @@
         </div>
     </div>
 
+    <!-- Buyer Information Section -->
     <div class="section">
         <h2>Buyer Information</h2>
         <div class="row g-3">
@@ -61,6 +63,7 @@
         </div>
     </div>
 
+    <!-- Items Section -->
     <div class="section" id="items-section">
         <h2>Items</h2>
         <div class="item">
@@ -78,8 +81,19 @@
                     <input type="number" class="form-control" id="item-quantity-pieces-1" placeholder="Enter quantity in pieces">
                 </div>
                 <div class="col-md-6">
-                    <label for="item-price-1" class="form-label">Price Per Piece</label>
-                    <input type="number" class="form-control" id="item-price-1" placeholder="Enter price per piece">
+                    <label for="price-type-1" class="form-label">Price Type</label>
+                    <select class="form-select" id="price-type-1" onchange="updatePriceFieldVisibility(1)">
+                        <option value="per_piece">Price Per Piece</option>
+                        <option value="per_carton">Price Per Carton</option>
+                    </select>
+                </div>
+                <div class="col-md-6" id="price-per-piece-1" style="display: block;">
+                    <label for="item-price-1" class="form-label">Price</label>
+                    <input type="number" class="form-control" id="item-price-1" placeholder="Enter Price">
+                </div>
+                <div class="col-md-6" id="price-per-carton-1" style="display: none;">
+                    <label for="item-price-carton-1" class="form-label">Price</label>
+                    <input type="number" class="form-control" id="item-price-carton-1" placeholder="Enter Price">
                 </div>
                 <div class="col-md-12">
                     <label for="item-remarks-1" class="form-label">Remarks</label>
@@ -93,17 +107,21 @@
         </div>
     </div>
 
+    <!-- Add Another Item Button -->
     <button class="btn btn-primary" onclick="addItem()">Add Another Item</button>
 
+    <!-- Payment Terms Section -->
     <div class="section">
         <h2>Payment Terms</h2>
         <label for="payment-terms" class="form-label">Payment Terms</label>
         <textarea class="form-control" id="payment-terms" placeholder="Enter payment terms"></textarea>
     </div>
 
+    <!-- Generate Invoice Button -->
     <button class="btn btn-success" onclick="generateInvoice()">Generate Invoice</button>
 </div>
 
+<!-- JavaScript section -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -126,11 +144,22 @@
                 </div>
                 <div class="col-md-6">
                     <label for="item-quantity-pieces-${itemCount}" class="form-label">Quantity in Pieces</label>
-                    <input type="number" class="form-control" id="item-quantity-pieces-${itemCount}" placeholder="Enter quantity in pieces">
+                    <input type="number" class="form-control" id="item-quantity-pieces-${itemCount}">
                 </div>
                 <div class="col-md-6">
-                    <label for="item-price-${itemCount}" class="form-label">Price Per Piece</label>
-                    <input type="number" class="form-control" id="item-price-${itemCount}" placeholder="Enter price per piece">
+                    <label for="price-type-${itemCount}" class="form-label">Price Type</label>
+                    <select class="form-select" id="price-type-${itemCount}" onchange="updatePriceFieldVisibility(${itemCount})">
+                        <option value="per_piece">Price Per Piece</option>
+                        <option value="per_carton">Price Per Carton</option>
+                    </select>
+                </div>
+                <div class="col-md-6" id="price-per-piece-${itemCount}" style="display: block;">
+                    <label for="item-price-${itemCount}" class="form-label">Price</label>
+                    <input type="number" class="form-control" id="item-price-${itemCount}" placeholder="Enter Price">
+                </div>
+                <div class="col-md-6" id="price-per-carton-${itemCount}" style="display: none;">
+                    <label for="item-price-carton-${itemCount}" class="form-label">Price</label>
+                    <input type="number" class="form-control" id="item-price-carton-${itemCount}" placeholder="Enter Price">
                 </div>
                 <div class="col-md-12">
                     <label for="item-remarks-${itemCount}" class="form-label">Remarks</label>
@@ -145,6 +174,18 @@
 
         itemDiv.innerHTML = itemHtml;
         itemsSection.appendChild(itemDiv);
+    }
+
+    function updatePriceFieldVisibility(itemCount) {
+        const priceType = document.getElementById(`price-type-${itemCount}`).value;
+
+        if (priceType === "per_piece") {
+            document.getElementById(`price-per-piece-${itemCount}`).style.display = "block";
+            document.getElementById(`price-per-carton-${itemCount}`).style.display = "none";
+        } else {
+            document.getElementById(`price-per-piece-${itemCount}`).style.display = "none";
+            document.getElementById(`price-per-carton-${itemCount}`).style.display = "block";
+        }
     }
 
     function readFileAsDataURL(file) {
@@ -178,7 +219,16 @@ function generateInvoice() {
         const itemName = itemElement.querySelector(`#item-name-${index + 1}`).value;
         const itemQuantityCartons = itemElement.querySelector(`#item-quantity-cartons-${index + 1}`).value;
         const itemQuantityPieces = itemElement.querySelector(`#item-quantity-pieces-${index + 1}`).value;
-        const itemPrice = itemElement.querySelector(`#item-price-${index + 1}`).value;
+
+        const priceType = document.querySelector(`#price-type-${index + 1}`).value;
+
+        let itemPrice;
+        if (priceType === "per_piece") {
+            itemPrice = itemElement.querySelector(`#item-price-${index + 1}`).value;
+        } else {
+            itemPrice = itemElement.querySelector(`#item-price-carton-${index + 1}`).value;
+        }
+
         const itemRemarks = itemElement.querySelector(`#item-remarks-${index + 1}`).value;
 
         items.push({
@@ -186,6 +236,7 @@ function generateInvoice() {
             quantityCartons: itemQuantityCartons,
             quantityPieces: itemQuantityPieces,
             price: itemPrice,
+            priceType: priceType,
             remarks: itemRemarks,
         });
 
@@ -341,7 +392,9 @@ function generateInvoice() {
         `;
 
         items.forEach((item, index) => {
-            const itemTotal = item.quantityPieces * item.price;
+            const priceLabel = item.priceType === "per_piece" ? "Price Per Piece" : "Price Per Carton";
+            const quantityType = item.priceType === "per_piece" ? "quantityPieces" : "quantityCartons";
+            const itemTotal = item[quantityType] * item.price;
 
             invoiceContent += `
                 <tr>
@@ -354,7 +407,7 @@ function generateInvoice() {
                     <td class="item-details">
                         <p>Quantity (Cartons): ${item.quantityCartons}</p>
                         <p>Quantity (Pieces): ${item.quantityPieces}</p>
-                        <p>Price Per Piece: ${currency} ${item.price}</p>
+                        <p>${priceLabel}: ${currency} ${item.price}</p>
                         <p>Total Price: ${currency} ${itemTotal}</p>
                         <p>Remarks: ${item.remarks}</p>
                     </td>
@@ -377,7 +430,8 @@ function generateInvoice() {
 
         let totalValue = 0;
         items.forEach((item) => {
-            const itemTotal = item.quantityPieces * item.price;
+            const quantityType = item.priceType === "per_piece" ? "quantityPieces" : "quantityCartons";
+            const itemTotal = item[quantityType] * item.price;
             totalValue += itemTotal;
 
             invoiceContent += `
